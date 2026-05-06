@@ -6,8 +6,6 @@ import SportScreen from '../screens/sport/SportScreen.vue'
 import CasinoScreen from '../screens/casino/CasinoScreen.vue'
 import LiveScreen from '../screens/live/LiveScreen.vue'
 import DefaultLayout from '../components/layout/DefaultLayout.vue'
-import Login from '../screens/Auth/login/Login.vue'
-import Register from '../screens/Auth/register/Register.vue'
 
 const routes = [
     {

@@ -1,8 +1,9 @@
+<!-- hii ni App.vue file -->
 <script setup>
 </script>
 
 <template>
-  <div>
-    <h1 class="text-blue-700">Vue 3 + Vite + Tailwind CSS</h1>
+  <div class="p-0 m-0">
+    <RouterView/>
   </div>
 </template>

@@ -1,7 +1,7 @@
 <template>
     <div class="fixed bottom-0 left-0 right-0 z-50">
       <!-- Main Bottom Navigation Bar -->
-      <div class="bg-gradient-to-r from-cyan-950 via-cyan-950 to-cyan-950 backdrop-blur-lg border-t border-gray-700/50 shadow-2xl">
+      <div class="bg-gradient-to-r from-cyan-900 via-cyan-800 to-cyan-900 backdrop-blur-lg border-t border-gray-700/50 shadow-2xl">
         <div class="flex items-center justify-around px-4 py-2">
           
           <!-- Home Tab - Router Link -->
@@ -23,7 +23,9 @@
                 <svg class="w-6 h-6 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                 </svg>
-           
+                
+                <!-- Badge Example (if needed) -->
+                <span v-if="hasNotifications" class="absolute -top-1 -right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
               </div>
               
               <!-- Label -->
@@ -46,7 +48,9 @@
               <div v-if="isActive || activeTab === 'sport'" class="absolute -top-2 w-8 h-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
               
               <!-- Icon -->
-              <span class="text-xs"> ⚽</span>
+              <svg class="w-6 h-6 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
               
               <!-- Label -->
               <span class="text-xs font-medium mt-1">Sport</span>

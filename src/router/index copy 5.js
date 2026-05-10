@@ -8,24 +8,20 @@ import LiveScreen from '../screens/live/LiveScreen.vue'
 import DefaultLayout from '../components/layout/DefaultLayout.vue'
 import Login from '../screens/Auth/login/Login.vue'
 import Register from '../screens/Auth/register/Register.vue'
+import ProfileScreen from '../screens/profie/ProfileScreen.vue'
+import ForgotPassword from '../screens/Auth/forgot_password/ForgotPassword.vue'
+
+// Helper function to check authentication
+const isAuthenticated = () => {
+  // Use the same key as AuthStore
+  const token = localStorage.getItem('access_token')
+  return token !== null && token !== ''
+}
 
 const routes = [
     {
-        path: '/login',
-        name: 'Login',
-        component: Login,
-        meta: { requiresGuest: true }  // Guest only (wanaotumia tayari hawaruhusiwi)
-    },
-    {
-        path: '/register',
-        name: 'Register',
-        component: Register,
-        meta: { requiresGuest: true }
-    },
-    {
         path: '/',
         component: DefaultLayout,
-        meta: { requiresAuth: true },  // Authentication required
         children: [
             {
                 path: '',
@@ -46,6 +42,30 @@ const routes = [
                 path: 'live',
                 name: 'Live',
                 component: LiveScreen
+            },
+            {
+                path: 'login',
+                name: 'Login',
+                component: Login,
+                meta: { requiresGuest: true }
+            },
+            {
+                path: 'register',
+                name: 'Register',
+                component: Register,
+                meta: { requiresGuest: true }
+            },
+            {
+                path: 'account',
+                name: 'Profile',
+                component: ProfileScreen,
+                meta: { requiresAuth: true }
+            },
+            {
+                path: 'forgot-password',
+                name: 'ForgotPassword',
+                component: ForgotPassword,
+                meta: { requiresGuest: true } 
             }
         ]
     }
@@ -58,26 +78,33 @@ const router = createRouter({
 
 // Navigation Guard - Authentication Logic
 router.beforeEach((to, from, next) => {
-    // Check if user is logged in
-    const isAuthenticated = localStorage.getItem('auth_token') !== null
+    // Check if user is logged in using correct key
+    const authenticated = isAuthenticated()
     
     // Check if route requires authentication
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
     
-    // Check if route is for guests only (login/register)
+    // Check if route is for guests only (login/register/forgot-password)
     const requiresGuest = to.matched.some(record => record.meta.requiresGuest)
     
+    console.log(' Navigation Guard:', {
+        to: to.path,
+        authenticated,
+        requiresAuth,
+        requiresGuest
+    })
+    
     // Case 1: Route requires auth but user is NOT logged in
-    if (requiresAuth && !isAuthenticated) {
-        // Redirect to login page
+    if (requiresAuth && !authenticated) {
+        console.log(' Redirecting to login (auth required)')
         next({ 
             name: 'Login',
-            query: { redirect: to.fullPath }  // Save where user wanted to go
+            query: { redirect: to.fullPath }
         })
     }
     // Case 2: Guest tries to access login/register when already logged in
-    else if (requiresGuest && isAuthenticated) {
-        // Redirect to home page
+    else if (requiresGuest && authenticated) {
+        console.log(' Redirecting to home (already logged in)')
         next({ name: 'Home' })
     }
     // Case 3: All good, proceed

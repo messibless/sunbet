@@ -1,42 +1,124 @@
 <template>
-    <div class=" bg-gray-900">
-     
+    <div class="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 p-4">
+      <!-- Header -->
+      <div class="mb-6">
+        <h1 class="text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+          Live & Upcoming Matches
+        </h1>
+        <p class="text-gray-400 text-sm mt-1">Today's featured games</p>
+      </div>
   
       <!-- Games Grid -->
-      <div class="py-2">
+      <div class="space-y-4">
         <div 
           v-for="(game, index) in games" 
           :key="index"
-          class="bg-gray-900  py-2 px-2  overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300  border-b  border-gray-700"
+          class="bg-gradient-to-r from-slate-800 to-gray-800 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] border border-gray-700"
         >
-        <div class="w-full flex items-center justify-between text-xs">
-            <span class="text-xs text-orange-500">{{ game.league }}</span>
-            <span class="text-xs text-orange-500">+market</span>
-        </div>
-        <div class="w-full flex items-center justify-between text-xs">
-            <div class="flex justify-between flex-col">
-               <span class="text-sm text-orange-50">{{ game.homeTeam }}</span>
-                <span class="text-sm text-orange-50">{{ game.awayTeam }}</span>
+          <!-- League Info -->
+          <div class="px-4 py-2 bg-gray-900/50 border-b border-gray-700">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+                <span class="text-xs font-semibold text-purple-400">{{ game.league }}</span>
+              </div>
+              <div class="flex items-center space-x-2">
+                <span class="text-xs text-gray-500">{{ game.matchId }}</span>
+                <span v-if="game.isLive" class="px-2 py-0.5 bg-red-500 text-white text-xs rounded-full animate-pulse">
+                  LIVE
+                </span>
+              </div>
             </div>
-            <div class="flex justify-between gap-2 items-end">
-                <button class="flex gap-6 bg-gray-800 px-2 py-2 border border-gray-700">
-                    <span class="text-white">1</span>
-                    <span class="text-white">3.2</span>
-                </button>
-                <button class="flex gap-6 bg-gray-800 px-2 py-2  border border-gray-700 ">
-                    <span class="text-white">X</span>
-                    <span class="text-white">3.2</span>
-                </button>
-                <button class="flex gap-6 bg-gray-800 px-2 py-2  border border-gray-700">
-                    <span class="text-white">2</span>
-                    <span class="text-white">3.2</span>
-                </button>
+          </div>
+  
+          <!-- Teams -->
+          <div class="px-4 py-3">
+            <div class="flex items-center justify-between">
+              <!-- Home Team -->
+              <div class="flex-1">
+                <div class="flex items-center space-x-3">
+                  <div class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
+                    <span class="text-white font-bold text-sm">{{ game.homeTeam.substring(0, 2) }}</span>
+                  </div>
+                  <span class="text-white font-semibold">{{ game.homeTeam }}</span>
+                </div>
+              </div>
+  
+              <!-- VS -->
+              <div class="px-4">
+                <div class="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-500 rounded-full flex items-center justify-center">
+                  <span class="text-white text-xs font-bold">VS</span>
+                </div>
+              </div>
+  
+              <!-- Away Team -->
+              <div class="flex-1 text-right">
+                <div class="flex items-center justify-end space-x-3">
+                  <span class="text-white font-semibold">{{ game.awayTeam }}</span>
+                  <div class="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
+                    <span class="text-white font-bold text-sm">{{ game.awayTeam.substring(0, 2) }}</span>
+                  </div>
+                </div>
+              </div>
             </div>
-        </div>
-        <div class="flex items-center justify-start text-xs ">
-            <span class="text-orange-200 font-stretch-semi-expanded italic">{{ game.time }} </span>
-        </div>
-        
+  
+            <!-- Match Time/Score -->
+            <div class="mt-3 text-center">
+              <div v-if="game.isLive && game.score" class="text-2xl font-bold text-white">
+                {{ game.score.home }} - {{ game.score.away }}
+              </div>
+              <div v-else class="text-sm text-gray-400">
+                {{ game.time }} | {{ game.date }}
+              </div>
+              <div v-if="game.isLive" class="text-xs text-red-500 mt-1">Live Now</div>
+            </div>
+          </div>
+  
+          <!-- Betting Odds -->
+          <div class="px-4 py-3 bg-gray-900/30 border-t border-gray-700">
+            <div class="grid grid-cols-3 gap-3">
+              <!-- Home Win -->
+              <button 
+                @click="placeBet(game, 'home')"
+                class="group relative overflow-hidden bg-gray-800 hover:bg-gradient-to-r hover:from-purple-600 hover:to-blue-500 rounded-lg py-2 transition-all duration-300"
+              >
+                <div class="text-center">
+                  <p class="text-xs text-gray-400 group-hover:text-white/80">1</p>
+                  <p class="text-lg font-bold text-white">{{ game.odds.home }}</p>
+                  <p class="text-xs text-gray-500 group-hover:text-white/60">{{ game.homeTeamShort }}</p>
+                </div>
+                <div class="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-all duration-300"></div>
+              </button>
+  
+              <!-- Draw -->
+              <button 
+                @click="placeBet(game, 'draw')"
+                class="group relative overflow-hidden bg-gray-800 hover:bg-gradient-to-r hover:from-purple-600 hover:to-blue-500 rounded-lg py-2 transition-all duration-300"
+              >
+                <div class="text-center">
+                  <p class="text-xs text-gray-400 group-hover:text-white/80">X</p>
+                  <p class="text-lg font-bold text-white">{{ game.odds.draw }}</p>
+                  <p class="text-xs text-gray-500 group-hover:text-white/60">Draw</p>
+                </div>
+                <div class="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-all duration-300"></div>
+              </button>
+  
+              <!-- Away Win -->
+              <button 
+                @click="placeBet(game, 'away')"
+                class="group relative overflow-hidden bg-gray-800 hover:bg-gradient-to-r hover:from-purple-600 hover:to-blue-500 rounded-lg py-2 transition-all duration-300"
+              >
+                <div class="text-center">
+                  <p class="text-xs text-gray-400 group-hover:text-white/80">2</p>
+                  <p class="text-lg font-bold text-white">{{ game.odds.away }}</p>
+                  <p class="text-xs text-gray-500 group-hover:text-white/60">{{ game.awayTeamShort }}</p>
+                </div>
+                <div class="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-all duration-300"></div>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
   

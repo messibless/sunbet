@@ -49,9 +49,13 @@
           <div class="relative bg-gradient-to-r from-purple-600 to-blue-600 py-6 px-3">
             <div class="absolute inset-0 bg-black/10"></div>
             <div class="relative z-10 text-center">
-             
-              <h2 class="text-xl font-bold text-white mb-1 tracking-tight">Create Account</h2>
-              <p class="text-xs text-purple-100">Join our premium betting platform</p>
+              <div class="inline-flex items-center justify-center w-16 h-16 bg-white/20 rounded-2xl backdrop-blur-sm mb-3 animate-bounce-in">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                </svg>
+              </div>
+              <h2 class="text-xl font-bold text-white mb-1 tracking-tight">Forgot Password?</h2>
+              <p class="text-xs text-purple-100">Don't worry, we'll help you reset it</p>
             </div>
             <!-- Decorative Wave -->
             <svg class="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -61,8 +65,20 @@
   
           <!-- Form Content -->
           <div class="px-8 py-8">
-            <form @submit.prevent="handleRegister" class="space-y-5">
-              <!-- Phone Input -->
+            <!-- Step Indicator -->
+            <div class="flex items-center justify-center mb-6 space-x-2">
+              <div 
+                v-for="step in 3" 
+                :key="step"
+                :class="[
+                  'h-1 rounded-full transition-all duration-300',
+                  currentStep >= step ? 'bg-purple-600 w-8' : 'bg-gray-300 w-4'
+                ]"
+              ></div>
+            </div>
+  
+            <!-- Step 1: Phone Input -->
+            <div v-if="currentStep === 1" class="space-y-5 animate-fadeIn">
               <div>
                 <label class="block text-gray-700 font-semibold mb-2">Phone Number</label>
                 <div class="relative group">
@@ -77,10 +93,10 @@
                     placeholder="748090224"
                     class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-all duration-200 group-focus-within:shadow-md"
                     :class="{ 'border-red-500': errors.phone }"
-                    @input="errors.phone = ''"
+                    @keyup.enter="verifyPhone"
                   />
                 </div>
-                <p class="text-xs text-gray-400 mt-1">Enter your phone number (e.g., 748090224)</p>
+                <p class="text-xs text-gray-400 mt-1">Enter your registered phone number (e.g., 748090224)</p>
                 <div v-if="errors.phone" class="flex items-center mt-1 animate-shake">
                   <svg class="w-4 h-4 text-red-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -88,10 +104,27 @@
                   <p class="text-red-500 text-xs">{{ errors.phone }}</p>
                 </div>
               </div>
-              
-              <!-- Password Input -->
+  
+              <button 
+                @click="verifyPhone"
+                :disabled="verifying"
+                class="relative w-full bg-gradient-to-r from-purple-600 via-purple-500 to-blue-500 text-white font-bold py-3 rounded-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden group"
+              >
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                <div class="flex items-center justify-center relative z-10">
+                  <svg v-if="verifying" class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  {{ verifying ? 'Verifying...' : 'Verify Phone Number' }}
+                </div>
+              </button>
+            </div>
+  
+            <!-- Step 2: New Password (No confirm password) -->
+            <div v-if="currentStep === 2" class="space-y-5 animate-fadeIn">
               <div>
-                <label class="block text-gray-700 font-semibold mb-2">Password</label>
+                <label class="block text-gray-700 font-semibold mb-2">New Password</label>
                 <div class="relative group">
                   <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg class="h-5 w-5 text-gray-400 group-focus-within:text-purple-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -99,8 +132,8 @@
                     </svg>
                   </div>
                   <input 
-                    v-model="password" 
-                    :type="showPassword ? 'text' : 'password'" 
+                    v-model="newPassword" 
+                    :type="showPassword ? 'text' : 'password'"
                     placeholder="Minimum 4 characters"
                     class="w-full pl-10 pr-12 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-all duration-200 group-focus-within:shadow-md"
                     :class="{ 'border-red-500': errors.password }"
@@ -122,7 +155,7 @@
                 </div>
                 
                 <!-- Password Strength Indicator -->
-                <div v-if="password" class="mt-2">
+                <div v-if="newPassword" class="mt-2">
                   <div class="flex gap-1">
                     <div 
                       v-for="level in 4" 
@@ -147,37 +180,50 @@
                 </div>
               </div>
   
-              <!-- Premium Register Button -->
               <button 
-                type="submit" 
-                :disabled="loading"
-                class="relative w-full bg-gradient-to-r from-purple-600 via-purple-500 to-blue-500 text-white font-bold py-3 rounded-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 overflow-hidden group mt-6"
+                @click="resetPassword"
+                :disabled="resetting"
+                class="relative w-full bg-gradient-to-r from-purple-600 via-purple-500 to-blue-500 text-white font-bold py-3 rounded-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden group"
               >
                 <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                 <div class="flex items-center justify-center relative z-10">
-                  <svg v-if="loading" class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
+                  <svg v-if="resetting" class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  <svg v-else class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
-                  </svg>
-                  {{ loading ? 'Creating Account...' : 'Create Account' }}
+                  {{ resetting ? 'Resetting Password...' : 'Reset Password' }}
                 </div>
               </button>
-            </form>
+            </div>
   
-            <!-- Sign in link Premium -->
-            <div class="py-3 border-t border-gray-200 text-center ">
-              <p class="text-gray-600 text-sm">
-                Already have an account? 
-                <router-link 
-                  to="/login" 
-                  class="text-purple-600 font-bold hover:text-purple-700 transition-all hover:scale-105 inline-block ml-1"
-                >
-                  Sign In →
-                </router-link>
-              </p>
+            <!-- Step 3: Success -->
+            <div v-if="currentStep === 3" class="text-center space-y-5 animate-scaleIn">
+              <div class="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mx-auto">
+                <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <h3 class="text-2xl font-bold text-gray-800">Password Reset Successfully!</h3>
+              <p class="text-gray-500 text-sm">Your password has been reset. You can now login with your new password.</p>
+              <button 
+                @click="goToLogin"
+                class="relative w-full bg-gradient-to-r from-purple-600 via-purple-500 to-blue-500 text-white font-bold py-3 rounded-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 overflow-hidden group"
+              >
+                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                <div class="relative z-10">
+                  Go to Login
+                </div>
+              </button>
+            </div>
+  
+            <!-- Back to Login -->
+            <div class="mt-6 text-center">
+              <router-link to="/login" class="text-purple-600 hover:text-purple-700 font-medium transition-all hover:scale-105 inline-flex items-center">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Back to Login
+              </router-link>
             </div>
           </div>
         </div>
@@ -186,7 +232,7 @@
   </template>
   
   <script setup>
-  import { ref, reactive, onMounted } from 'vue'
+  import { ref, computed } from 'vue'
   import { useRouter } from 'vue-router'
   import { useAuthStore } from '../../../store/AuthStore'
   
@@ -195,16 +241,20 @@
   
   // Form data
   const phoneNumber = ref('')
-  const password = ref('')
+  const newPassword = ref('')
+  
+  // UI State
+  const currentStep = ref(1)
+  const verifying = ref(false)
+  const resetting = ref(false)
   const showPassword = ref(false)
-  const loading = ref(false)
   const passwordStrength = ref(0)
   
   // Toast notifications
   const toasts = ref([])
   
-  // Validation errors
-  const errors = reactive({
+  // Errors
+  const errors = ref({
     phone: '',
     password: ''
   })
@@ -214,7 +264,6 @@
     const id = Date.now()
     toasts.value.push({ id, message, type })
     
-    // Auto remove after 3 seconds
     setTimeout(() => {
       removeToast(id)
     }, 3000)
@@ -224,22 +273,19 @@
     toasts.value = toasts.value.filter(toast => toast.id !== id)
   }
   
-  // Password strength checker (updated for min 4 chars)
+  // Password strength checker (minimum 4 characters)
   const checkPasswordStrength = () => {
-    const pwd = password.value
+    const password = newPassword.value
     let strength = 0
     
-    if (pwd.length >= 4) strength++
-    if (pwd.length >= 6) strength++
-    if (pwd.length >= 8) strength++
-    if (/[A-Z]/.test(pwd)) strength++
-    if (/[0-9]/.test(pwd)) strength++
-    if (/[^A-Za-z0-9]/.test(pwd)) strength++
+    if (password.length >= 4) strength++
+    if (password.length >= 6) strength++
+    if (password.length >= 8) strength++
+    if (/[A-Z]/.test(password)) strength++
+    if (/[0-9]/.test(password)) strength++
+    if (/[^A-Za-z0-9]/.test(password)) strength++
     
     passwordStrength.value = Math.min(Math.floor(strength / 1.5), 4)
-    
-    // Clear password error when user types
-    if (errors.password) errors.password = ''
   }
   
   const getStrengthColor = () => {
@@ -273,92 +319,99 @@
     return colors[passwordStrength.value] || 'text-gray-400'
   }
   
-  // Validation functions
-  const validateForm = () => {
-    let isValid = true
+  // Validate phone
+  const validatePhone = () => {
+    errors.value.phone = ''
     
-    // Reset errors
-    errors.phone = ''
-    errors.password = ''
-    
-    // Validate phone - user anaandika tu namba kama 748090224
     if (!phoneNumber.value) {
-      errors.phone = 'Phone number is required'
-      isValid = false
-    } else {
-      const cleanPhone = phoneNumber.value.replace(/\D/g, '')
-      // Minimum 9 digits for Tanzanian numbers (without country code)
-      if (cleanPhone.length < 9) {
-        errors.phone = 'Please enter a valid phone number (minimum 9 digits)'
-        isValid = false
-      }
+      errors.value.phone = 'Phone number is required'
+      return false
     }
     
-    // Validate password - minimum 4 characters
-    if (!password.value) {
-      errors.password = 'Password is required'
-      isValid = false
-    } else if (password.value.length < 4) {
-      errors.password = 'Password must be at least 4 characters'
-      isValid = false
+    const cleanPhone = phoneNumber.value.replace(/\D/g, '')
+    if (cleanPhone.length < 9) {
+      errors.value.phone = 'Please enter a valid phone number (minimum 9 digits)'
+      return false
     }
     
-    return isValid
+    return true
   }
   
-  // Handle register
-  const handleRegister = async () => {
-    console.log('Register button clicked!')
+  // Validate password (minimum 4 characters)
+  const validatePassword = () => {
+    errors.value.password = ''
     
-    // Validate form
-    if (!validateForm()) {
-      addToast('Please fix the errors in the form', 'error')
+    if (!newPassword.value) {
+      errors.value.password = 'New password is required'
+      return false
+    } else if (newPassword.value.length < 4) {
+      errors.value.password = 'Password must be at least 4 characters'
+      return false
+    }
+    
+    return true
+  }
+  
+  // Verify phone number
+  const verifyPhone = async () => {
+    if (!validatePhone()) {
+      addToast('Please enter a valid phone number', 'error')
       return
     }
     
-    loading.value = true
+    verifying.value = true
     
     try {
-      // Clean phone number - remove all non-digits
-      // User anaandika tu "748090224", backend itaongeza 255
       const cleanPhone = phoneNumber.value.replace(/\D/g, '')
-      
-      console.log('Attempting registration for:', cleanPhone)
-      
-      // Call register action
-      const result = await authStore.register(cleanPhone, password.value)
-      
-      console.log('Registration result:', result)
+      const result = await authStore.validatePhoneForReset(cleanPhone)
       
       if (result.success) {
-        // Show success toast
-        addToast('Account created successfully! Redirecting to login...', 'success')
-        
-        // Redirect after 1.5 seconds
-        setTimeout(() => {
-          router.push({ path: '/login', query: { registered: 'true' } })
-        }, 1500)
+        addToast('Phone number verified!', 'success')
+        currentStep.value = 2
       } else {
-        // Show error toast
-        addToast(result.error || 'Registration failed. Please try again.', 'error')
+        addToast(result.error || 'Phone number not found', 'error')
       }
     } catch (error) {
-      console.error('Registration error:', error)
-      addToast('An unexpected error occurred. Please try again.', 'error')
+      addToast('An error occurred. Please try again.', 'error')
     } finally {
-      loading.value = false
+      verifying.value = false
     }
   }
   
-  // Auto-focus on phone input
-  const focusPhoneInput = () => {
-    const input = document.querySelector('input[type="tel"]')
-    if (input) input.focus()
+  // Reset password
+  const resetPassword = async () => {
+    if (!validatePassword()) {
+      addToast('Please enter a valid password (minimum 4 characters)', 'error')
+      return
+    }
+    
+    resetting.value = true
+    
+    try {
+      const cleanPhone = phoneNumber.value.replace(/\D/g, '')
+      const result = await authStore.simpleForgotPassword(
+        cleanPhone,
+        newPassword.value,
+        newPassword.value // No confirm password needed
+      )
+      
+      if (result.success) {
+        addToast('Password reset successful!', 'success')
+        currentStep.value = 3
+      } else {
+        addToast(result.error || 'Password reset failed', 'error')
+      }
+    } catch (error) {
+      addToast('An error occurred. Please try again.', 'error')
+    } finally {
+      resetting.value = false
+    }
   }
   
-  onMounted(() => {
-    focusPhoneInput()
-  })
+  // Go to login
+  const goToLogin = () => {
+    router.push('/login')
+  }
   </script>
   
   <style scoped>
@@ -381,6 +434,28 @@
     to {
       opacity: 1;
       transform: translateX(0);
+    }
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
     }
   }
   
@@ -422,6 +497,14 @@
   
   .animate-slideInRight {
     animation: slideInRight 0.3s ease-out;
+  }
+  
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  .animate-scaleIn {
+    animation: scaleIn 0.4s ease-out;
   }
   
   .animate-shake {

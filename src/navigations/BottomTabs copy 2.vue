@@ -1,7 +1,7 @@
 <template>
     <div class="fixed bottom-0 left-0 right-0 z-50">
       <!-- Main Bottom Navigation Bar -->
-      <div class="bg-gradient-to-r from-cyan-950 via-cyan-950 to-cyan-950 backdrop-blur-lg border-t border-gray-700/50 shadow-2xl">
+      <div class="bg-gradient-to-r from-cyan-900 via-gray-800 to-cyan-900 backdrop-blur-lg border-t border-gray-700/50 shadow-2xl">
         <div class="flex items-center justify-around px-4 py-2">
           
           <!-- Home Tab - Router Link -->
@@ -13,7 +13,7 @@
             <button 
               @click="navigate; activeTab = 'home'"
               class="flex flex-col items-center justify-center space-y-1 group relative"
-              :class="isActive || activeTab === 'home' ? 'text-cyan-100' : 'text-gray-400 hover:text-gray-300'"
+              :class="isActive || activeTab === 'home' ? 'text-purple-400' : 'text-gray-400 hover:text-gray-300'"
             >
               <!-- Active Indicator -->
               <div v-if="isActive || activeTab === 'home'" class="absolute -top-2 w-8 h-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
@@ -23,7 +23,9 @@
                 <svg class="w-6 h-6 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                 </svg>
-           
+                
+                <!-- Badge Example (if needed) -->
+                <span v-if="hasNotifications" class="absolute -top-1 -right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
               </div>
               
               <!-- Label -->
@@ -40,13 +42,15 @@
             <button 
               @click="navigate; activeTab = 'sport'"
               class="flex flex-col items-center justify-center space-y-1 group relative"
-              :class="isActive || activeTab === 'sport' ? 'text-cyan-100' : 'text-gray-400 hover:text-gray-300'"
+              :class="isActive || activeTab === 'sport' ? 'text-purple-400' : 'text-gray-400 hover:text-gray-300'"
             >
               <!-- Active Indicator -->
               <div v-if="isActive || activeTab === 'sport'" class="absolute -top-2 w-8 h-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
               
               <!-- Icon -->
-              <span class="text-xs"> ⚽</span>
+              <svg class="w-6 h-6 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
               
               <!-- Label -->
               <span class="text-xs font-medium mt-1">Sport</span>
@@ -61,23 +65,23 @@
           >
             <button 
               @click="navigate; activeTab = 'betslip'"
-              class="flex flex-col items-center justify-center space-y-1 group relative "
-              :class="isActive || activeTab === 'betslip' ? 'text-cyan-100' : 'text-gray-400 hover:text-gray-300'"
+              class="flex flex-col items-center justify-center space-y-1 group relative -mt-6"
+              :class="isActive || activeTab === 'betslip' ? 'text-purple-400' : 'text-gray-400 hover:text-gray-300'"
             >
               <!-- Premium Floating Effect -->
-              <div class="absolute   flex items-center justify-center shadow-2xl transform transition-all duration-300 group-hover:scale-110 group-hover:shadow-purple-500/50">
+              <div class="absolute -top-4 w-14 h-14 bg-gradient-to-br from-purple-600 to-blue-500 rounded-2xl flex items-center justify-center shadow-2xl transform transition-all duration-300 group-hover:scale-110 group-hover:shadow-purple-500/50">
                 <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                 </svg>
                 
                 <!-- Bet Count Badge -->
-                <!-- <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-lg">
+                <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-lg">
                   {{ betCount }}
-                </span> -->
+                </span>
               </div>
               
               <!-- Label -->
-              <span class="text-xs font-medium mt-9" :class="isActive || activeTab === 'betslip' ? 'text-purple-400' : 'text-gray-400'">Betslip</span>
+              <span class="text-xs font-medium mt-7" :class="isActive || activeTab === 'betslip' ? 'text-purple-400' : 'text-gray-400'">Betslip</span>
             </button>
           </router-link>
   
@@ -90,7 +94,7 @@
             <button 
               @click="navigate; activeTab = 'mybets'"
               class="flex flex-col items-center justify-center space-y-1 group relative"
-              :class="isActive || activeTab === 'mybets' ? 'text-cyan-100' : 'text-gray-400 hover:text-gray-300'"
+              :class="isActive || activeTab === 'mybets' ? 'text-purple-400' : 'text-gray-400 hover:text-gray-300'"
             >
               <!-- Active Indicator -->
               <div v-if="isActive || activeTab === 'mybets'" class="absolute -top-2 w-8 h-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
@@ -114,7 +118,7 @@
             <button 
               @click="navigate; activeTab = 'account'"
               class="flex flex-col items-center justify-center space-y-1 group relative"
-              :class="isActive || activeTab === 'account' ? 'text-cyan-100' : 'text-gray-400 hover:text-gray-300'"
+              :class="isActive || activeTab === 'account' ? 'text-purple-400' : 'text-gray-400 hover:text-gray-300'"
             >
               <!-- Active Indicator -->
               <div v-if="isActive || activeTab === 'account'" class="absolute -top-2 w-8 h-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>

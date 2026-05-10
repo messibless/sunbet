@@ -11,47 +11,21 @@
         <div class="absolute bottom-20 right-10 w-32 h-32 bg-blue-400/20 rounded-full blur-xl animate-float-delayed"></div>
       </div>
   
-      <!-- Toast Container -->
-      <div class="fixed top-4 right-4 z-50 space-y-2">
-        <div 
-          v-for="toast in toasts" 
-          :key="toast.id"
-          :class="[
-            'flex items-center p-4 rounded-lg shadow-lg transform transition-all duration-300 animate-slideInRight',
-            toast.type === 'success' ? 'bg-green-500' : 'bg-red-500',
-            'min-w-[300px] max-w-md'
-          ]"
-        >
-          <div class="flex-shrink-0">
-            <svg v-if="toast.type === 'success'" class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-            <svg v-else class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-          </div>
-          <div class="ml-3 flex-1">
-            <p class="text-white text-sm font-medium">{{ toast.message }}</p>
-          </div>
-          <button @click="removeToast(toast.id)" class="ml-4 flex-shrink-0">
-            <svg class="w-4 h-4 text-white/80 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
-        </div>
-      </div>
-  
       <!-- Main Card -->
       <div class="relative z-10 w-full max-w-md animate-slideUp">
         <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden transform transition-all duration-500 hover:shadow-3xl">
           
           <!-- Premium Header -->
-          <div class="relative bg-gradient-to-r from-purple-600 to-blue-600 py-6 px-3">
+          <div class="relative bg-gradient-to-r from-purple-600 to-blue-600 px-8 pt-10 pb-12">
             <div class="absolute inset-0 bg-black/10"></div>
             <div class="relative z-10 text-center">
-             
-              <h2 class="text-xl font-bold text-white mb-1 tracking-tight">Create Account</h2>
-              <p class="text-xs text-purple-100">Join our premium betting platform</p>
+              <div class="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-2xl backdrop-blur-sm mb-4 animate-bounce-in">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <h2 class="text-sm font-bold text-white mb-2 tracking-tight">Welcome Back</h2>
+              <p class="text-xs text-purple-100">Sign in to your premium account</p>
             </div>
             <!-- Decorative Wave -->
             <svg class="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -61,7 +35,7 @@
   
           <!-- Form Content -->
           <div class="px-8 py-8">
-            <form @submit.prevent="handleRegister" class="space-y-5">
+            <form @submit.prevent="handleLogin" class="space-y-6">
               <!-- Phone Input -->
               <div>
                 <label class="block text-gray-700 font-semibold mb-2">Phone Number</label>
@@ -74,13 +48,12 @@
                   <input 
                     v-model="phoneNumber" 
                     type="tel" 
-                    placeholder="748090224"
+                    placeholder="0712345678"
                     class="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-all duration-200 group-focus-within:shadow-md"
                     :class="{ 'border-red-500': errors.phone }"
                     @input="errors.phone = ''"
                   />
                 </div>
-                <p class="text-xs text-gray-400 mt-1">Enter your phone number (e.g., 748090224)</p>
                 <div v-if="errors.phone" class="flex items-center mt-1 animate-shake">
                   <svg class="w-4 h-4 text-red-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -101,10 +74,10 @@
                   <input 
                     v-model="password" 
                     :type="showPassword ? 'text' : 'password'" 
-                    placeholder="Minimum 4 characters"
+                    placeholder="Enter your password"
                     class="w-full pl-10 pr-12 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-all duration-200 group-focus-within:shadow-md"
                     :class="{ 'border-red-500': errors.password }"
-                    @input="checkPasswordStrength"
+                    @input="errors.password = ''"
                   />
                   <button 
                     type="button"
@@ -120,25 +93,6 @@
                     </svg>
                   </button>
                 </div>
-                
-                <!-- Password Strength Indicator -->
-                <div v-if="password" class="mt-2">
-                  <div class="flex gap-1">
-                    <div 
-                      v-for="level in 4" 
-                      :key="level"
-                      :class="[
-                        'h-1 rounded-full transition-all duration-300',
-                        passwordStrength >= level ? getStrengthColor() : 'bg-gray-200'
-                      ]"
-                      style="flex: 1"
-                    ></div>
-                  </div>
-                  <p class="text-xs mt-1" :class="getStrengthTextColor()">
-                    {{ getStrengthText() }}
-                  </p>
-                </div>
-                
                 <div v-if="errors.password" class="flex items-center mt-1 animate-shake">
                   <svg class="w-4 h-4 text-red-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -147,11 +101,58 @@
                 </div>
               </div>
   
-              <!-- Premium Register Button -->
+              <!-- Remember me & Forgot password Premium Style -->
+              <div class="flex items-center justify-between">
+                <label class="flex items-center cursor-pointer group">
+                  <div class="relative">
+                    <input 
+                      v-model="rememberMe" 
+                      type="checkbox" 
+                      class="sr-only peer"
+                    />
+                    <div class="w-5 h-5 border-2 border-gray-300 rounded-md peer-checked:bg-purple-600 peer-checked:border-purple-600 transition-all duration-200"></div>
+                    <svg class="absolute top-0.5 left-0.5 w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                  </div>
+                  <span class="ml-2 text-sm text-gray-600 group-hover:text-gray-800 transition-colors">Remember me</span>
+                </label>
+                <router-link 
+                  to="/forgot-password" 
+                  class="text-sm text-purple-600 hover:text-purple-700 font-semibold transition-all hover:scale-105 inline-block"
+                >
+                  Forgot password?
+                </router-link>
+              </div>
+  
+              <!-- Error Message Premium Alert -->
+              <transition 
+                enter-active-class="transition-all duration-300 ease-out"
+                enter-from-class="opacity-0 transform -translate-y-2"
+                enter-to-class="opacity-100 transform translate-y-0"
+                leave-active-class="transition-all duration-200 ease-in"
+                leave-from-class="opacity-100"
+                leave-to-class="opacity-0"
+              >
+                <div v-if="errorMessage" class="bg-gradient-to-r from-red-50 to-red-100 border-l-4 border-red-500 p-4 rounded-xl animate-shake">
+                  <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                      <svg class="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                    </div>
+                    <div class="ml-3">
+                      <p class="text-sm text-red-700">{{ errorMessage }}</p>
+                    </div>
+                  </div>
+                </div>
+              </transition>
+  
+              <!-- Premium Login Button -->
               <button 
                 type="submit" 
                 :disabled="loading"
-                class="relative w-full bg-gradient-to-r from-purple-600 via-purple-500 to-blue-500 text-white font-bold py-3 rounded-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 overflow-hidden group mt-6"
+                class="relative w-full bg-gradient-to-r from-purple-600 via-purple-500 to-blue-500 text-white font-bold py-3 rounded-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 overflow-hidden group"
               >
                 <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                 <div class="flex items-center justify-center relative z-10">
@@ -160,26 +161,46 @@
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
                   <svg v-else class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
                   </svg>
-                  {{ loading ? 'Creating Account...' : 'Create Account' }}
+                  {{ loading ? 'Signing in...' : 'Sign In' }}
                 </div>
               </button>
+  
+            
+  
+            
             </form>
   
-            <!-- Sign in link Premium -->
-            <div class="py-3 border-t border-gray-200 text-center ">
-              <p class="text-gray-600 text-sm">
-                Already have an account? 
+            <!-- Sign up link Premium -->
+            <div class="mt-8 pt-6 border-t border-gray-200 text-center">
+              <p class="text-gray-600">
+                Don't have an account? 
                 <router-link 
-                  to="/login" 
+                  to="/register" 
                   class="text-purple-600 font-bold hover:text-purple-700 transition-all hover:scale-105 inline-block ml-1"
                 >
-                  Sign In →
+                  Create Account →
                 </router-link>
               </p>
             </div>
           </div>
+        </div>
+  
+        <!-- Trust Badges -->
+        <div class="text-center mt-6">
+          <p class="text-white/80 text-xs flex items-center justify-center gap-4">
+            <span class="flex items-center gap-1">
+              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+              Secure SSL
+            </span>
+            <span>|</span>
+            <span>24/7 Support</span>
+            <span>|</span>
+            <span>Instant Withdrawals</span>
+          </p>
         </div>
       </div>
     </div>
@@ -187,91 +208,26 @@
   
   <script setup>
   import { ref, reactive, onMounted } from 'vue'
-  import { useRouter } from 'vue-router'
+  import { useRouter, useRoute } from 'vue-router'
   import { useAuthStore } from '../../../store/AuthStore'
   
   const router = useRouter()
+  const route = useRoute()
   const authStore = useAuthStore()
   
   // Form data
   const phoneNumber = ref('')
   const password = ref('')
+  const rememberMe = ref(false)
   const showPassword = ref(false)
   const loading = ref(false)
-  const passwordStrength = ref(0)
-  
-  // Toast notifications
-  const toasts = ref([])
+  const errorMessage = ref('')
   
   // Validation errors
   const errors = reactive({
     phone: '',
     password: ''
   })
-  
-  // Toast functions
-  const addToast = (message, type = 'success') => {
-    const id = Date.now()
-    toasts.value.push({ id, message, type })
-    
-    // Auto remove after 3 seconds
-    setTimeout(() => {
-      removeToast(id)
-    }, 3000)
-  }
-  
-  const removeToast = (id) => {
-    toasts.value = toasts.value.filter(toast => toast.id !== id)
-  }
-  
-  // Password strength checker (updated for min 4 chars)
-  const checkPasswordStrength = () => {
-    const pwd = password.value
-    let strength = 0
-    
-    if (pwd.length >= 4) strength++
-    if (pwd.length >= 6) strength++
-    if (pwd.length >= 8) strength++
-    if (/[A-Z]/.test(pwd)) strength++
-    if (/[0-9]/.test(pwd)) strength++
-    if (/[^A-Za-z0-9]/.test(pwd)) strength++
-    
-    passwordStrength.value = Math.min(Math.floor(strength / 1.5), 4)
-    
-    // Clear password error when user types
-    if (errors.password) errors.password = ''
-  }
-  
-  const getStrengthColor = () => {
-    const colors = {
-      1: 'bg-red-500',
-      2: 'bg-orange-500',
-      3: 'bg-yellow-500',
-      4: 'bg-green-500'
-    }
-    return colors[passwordStrength.value] || 'bg-gray-200'
-  }
-  
-  const getStrengthText = () => {
-    const texts = {
-      0: 'Enter a password',
-      1: 'Weak',
-      2: 'Fair',
-      3: 'Good',
-      4: 'Strong'
-    }
-    return texts[passwordStrength.value]
-  }
-  
-  const getStrengthTextColor = () => {
-    const colors = {
-      1: 'text-red-500',
-      2: 'text-orange-500',
-      3: 'text-yellow-600',
-      4: 'text-green-500'
-    }
-    return colors[passwordStrength.value] || 'text-gray-400'
-  }
   
   // Validation functions
   const validateForm = () => {
@@ -281,73 +237,86 @@
     errors.phone = ''
     errors.password = ''
     
-    // Validate phone - user anaandika tu namba kama 748090224
+    // Validate phone
     if (!phoneNumber.value) {
       errors.phone = 'Phone number is required'
       isValid = false
     } else {
       const cleanPhone = phoneNumber.value.replace(/\D/g, '')
-      // Minimum 9 digits for Tanzanian numbers (without country code)
-      if (cleanPhone.length < 9) {
-        errors.phone = 'Please enter a valid phone number (minimum 9 digits)'
+      if (cleanPhone.length < 10) {
+        errors.phone = 'Please enter a valid phone number (10-12 digits)'
         isValid = false
       }
     }
     
-    // Validate password - minimum 4 characters
+    // Validate password
     if (!password.value) {
       errors.password = 'Password is required'
       isValid = false
-    } else if (password.value.length < 4) {
-      errors.password = 'Password must be at least 4 characters'
+    } else if (password.value.length < 6) {
+      errors.password = 'Password must be at least 6 characters'
       isValid = false
     }
     
     return isValid
   }
   
-  // Handle register
-  const handleRegister = async () => {
-    console.log('Register button clicked!')
+  // Handle login
+  const handleLogin = async () => {
+    console.log('Login button clicked!')
+    
+    // Clear previous error
+    errorMessage.value = ''
     
     // Validate form
     if (!validateForm()) {
-      addToast('Please fix the errors in the form', 'error')
       return
     }
     
     loading.value = true
     
     try {
-      // Clean phone number - remove all non-digits
-      // User anaandika tu "748090224", backend itaongeza 255
+      // Clean phone number
       const cleanPhone = phoneNumber.value.replace(/\D/g, '')
       
-      console.log('Attempting registration for:', cleanPhone)
+      console.log('Attempting login for:', cleanPhone)
       
-      // Call register action
-      const result = await authStore.register(cleanPhone, password.value)
+      // Call login action
+      const result = await authStore.login(cleanPhone, password.value)
       
-      console.log('Registration result:', result)
+      console.log('Login result:', result)
       
       if (result.success) {
-        // Show success toast
-        addToast('Account created successfully! Redirecting to login...', 'success')
+        console.log('Login successful!')
         
-        // Redirect after 1.5 seconds
-        setTimeout(() => {
-          router.push({ path: '/login', query: { registered: 'true' } })
-        }, 1500)
+        // If remember me is checked, persist session longer
+        if (rememberMe.value) {
+          // You can implement longer session expiry here
+          localStorage.setItem('remember_me', 'true')
+        }
+        
+        // Redirect to intended page or home
+        const redirectPath = route.query.redirect || '/dashboard'
+        router.push(redirectPath)
       } else {
-        // Show error toast
-        addToast(result.error || 'Registration failed. Please try again.', 'error')
+        errorMessage.value = result.error || 'Invalid phone number or password'
       }
     } catch (error) {
-      console.error('Registration error:', error)
-      addToast('An unexpected error occurred. Please try again.', 'error')
+      console.error('Login error:', error)
+      errorMessage.value = 'An unexpected error occurred. Please try again.'
     } finally {
       loading.value = false
     }
+  }
+  
+  // Fill demo credentials
+  const fillDemoCredentials = () => {
+    phoneNumber.value = '0712345678'
+    password.value = 'password123'
+    errorMessage.value = ''
+    
+    // Optional: Auto-submit after filling
+    // setTimeout(() => handleLogin(), 100)
   }
   
   // Auto-focus on phone input
@@ -356,7 +325,14 @@
     if (input) input.focus()
   }
   
+  // Check if coming from registration
   onMounted(() => {
+    if (route.query.registered === 'true') {
+      errorMessage.value = 'Registration successful! Please login.'
+    }
+    if (route.query.reset === 'success') {
+      errorMessage.value = 'Password reset successful! Please login with your new password.'
+    }
     focusPhoneInput()
   })
   </script>
@@ -370,17 +346,6 @@
     to {
       opacity: 1;
       transform: translateY(0);
-    }
-  }
-  
-  @keyframes slideInRight {
-    from {
-      opacity: 0;
-      transform: translateX(100%);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
     }
   }
   
@@ -420,10 +385,6 @@
     animation: slideUp 0.4s ease-out;
   }
   
-  .animate-slideInRight {
-    animation: slideInRight 0.3s ease-out;
-  }
-  
   .animate-shake {
     animation: shake 0.3s ease-in-out;
   }
@@ -451,6 +412,19 @@
   
   .hover\:shadow-3xl:hover {
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+  
+  /* Custom checkbox styling */
+  input[type="checkbox"].sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
   }
   
   /* Smooth focus effects */
